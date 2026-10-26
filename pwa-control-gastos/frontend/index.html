@@ -1,51 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control de gastos</title>
-    <link rel="stylesheet" href="css/estilos.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control de Gastos</title>
+  <link rel="stylesheet" href="css/estilos.css" />
+  <link rel=manifest href = "manifest.webmanifest" />
+
 </head>
 
 <body>
-    <main>
-        <h1>Control de Gastos</h1>
-        <section>
-            <h2>Registrar Gatos</h2>
-            <form id="form-gasto">
+  <main>
+    <h1>Control de Gastos</h1>
 
-                <label for="description">description</label>
-                <input type="text" id="description" name="description" required>
+    <section>
+      <h2>Registrar gasto</h2>
 
-                <label for="cantidad">Cantidad</label>
-                <input type="number" id="cantidad" name="cantidad" min="0" step="0.01" required>
+      <form id="form-gasto">
+        <div>
+          <label for="descripcion">Descripción</label>
+          <input type="text" id="descripcion" name="descripcion" required />
+        </div>
 
-                <label for="categoria">Categoría</label>
-                <select name="categoria" id="categoria" required>
-                    <option value="">Selecciona una categoria</option>
-                    <option value="Alimentacion">Alimentacion</option>
-                    <option value="Transporte">Transporte</option>
-                    <option value="Entretenimiento">Entretenimiento</option>
-                    <option value="Otros">Otros</option>
-                </select>
+        <div>
+          <label for="cantidad">Cantidad</label>
+          <input type="number" id="cantidad" name="cantidad" min="0" step="0.01" required />
+        </div>
 
-                <label for="Fecha">Fecha</label>
-                <input type="date" name="fecha" id="Fecha" required>
+        <div>
+          <label for="categoria">Categoría</label>
+          <select id="categoria" name="categoria" required>
+            <option value="">Selecciona una categoría</option>
+            <option value="Alimentación">Alimentación</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Vivienda">Vivienda</option>
+            <option value="Entretenimiento">Entretenimiento</option>
+            <option value="Otros">Otros</option>
+          </select>
+        </div>
 
-                <button type="submit">agregar gastos</button>
+        <div>
+          <label for="fecha">Fecha</label>
+          <input type="date" id="fecha" name="fecha" required />
+        </div>
 
-                <section>
-                    <h2>Gastos Registrados</h2>
-                    <ul id="lista-gastos"></ul>
-                    <p>
-                        Total: <strong id="total-gastos">$0.00</strong>
-                    </p>
-                </section>
-            </form>
-        </section>
-    </main>
-    <script src="js/app.js"></script>
+        <button type="submit">Agregar gasto</button>
+        <button type="button" id="btn-cancelar-edicion" hidden>
+          Cancelar edición
+        </button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Gastos registrados</h2>
+
+      <ul id="lista-gastos"></ul>
+
+      <p>
+        Total:
+        <strong id="total-gastos">$0.00</strong>
+      </p>
+    </section>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
 </body>
 
 </html>

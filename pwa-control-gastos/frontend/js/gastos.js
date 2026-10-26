@@ -14,7 +14,7 @@ export function obtenerGastos(){
     return gastos;
 }
 
-export function actualizarGastos(id, datosActualizados){
+export function actualizarGasto(id, datosActualizados){
     const gasto = obtenerGastoPorId(id);
 
     if (!gasto){

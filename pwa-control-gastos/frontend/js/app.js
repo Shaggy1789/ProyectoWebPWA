@@ -1,110 +1,174 @@
-const formulario = document.querySelector('#form-gasto');
-const listasGastos = document.querySelector('#lista-gastos');
-const totalGastos = document.querySelector('#total-gastos');
+import {
+    construirGasto,
+    agregarGasto,
+    obtenerGastos,
+    obtenerGastoPorId,
+    actualizarGasto,
+    eliminarGasto,
+    calcularTotalGastos
+} from "./gastos.js";
 
-const gastos = [];
+const formulario = document.querySelector("#form-gasto");
+const listaGastos = document.querySelector("#lista-gastos");
+const totalGastos = document.querySelector("#total-gastos");
+const botonFormulario = formulario.querySelector("button[type='submit']");
+const botonCancelarEdicion = document.querySelector("#btn-cancelar-edicion");
+
+
+let idGastoEditando = null;
 
 formulario.addEventListener("submit", function (evento) {
-    evento.preventDefault();
+  evento.preventDefault();
 
-    const description = document.querySelector('#description').value;
-    const cantidad = Number(document.querySelector('#cantidad').value);
-    const categoria = document.querySelector('#categoria').value;
-    const fecha = document.querySelector('#Fecha').value;
+  const datosFormulario = obtenerDatosFormulario();
 
-    const gasto = {
-        id: crypto.randomUUID(),
-        description,
-        cantidad,
-        categoria,
-        fecha
-    };
+  guardarGasto(datosFormulario);
 
-    console.log(gasto);
+  restablecerFormulario();
 
-    agregarGasto(gasto);
+  renderizarGastos();
 
-    // TODO: invocar función renderizarGastos()
-    renderizarGastos();
-
-    formulario.reset();
 });
 
-function renderizarGastos() {
-    listasGastos.innerHTML = "";
+botonCancelarEdicion.addEventListener("click", function () {
+  restablecerFormulario();
+});
 
-    let total = 0;
 
-    gastos.forEach(function (gasto) {
-        const item = document.createElement("li");
-        const botonEliminar = document.createElement("button");
-        const botonEditar = document.createElement("button");
-        botonEliminar.textContent = "Eliminar";
-        botonEditar.textContent = "Editar";
-        
+export function obtenerDatosFormulario() {
+  const descripcion = document.querySelector("#descripcion").value;
+  const cantidad = Number(document.querySelector("#cantidad").value);
+  const categoria = document.querySelector("#categoria").value;
+  const fecha = document.querySelector("#fecha").value;
 
-        botonEliminar.addEventListener("click", function(){
-            eliminarGasto(gasto.id);
-        });
+  return {
+    descripcion: descripcion,
+    cantidad: cantidad,
+    categoria: categoria,
+    fecha: fecha,
+  };
+}
 
-        botonEditar.addEventListener("click", () =>{
-            cargarGastoEnFormulario(gasto.id);
-        })
-        item.textContent =
-            `${gasto.description} - $${gasto.cantidad.toFixed(2)} - ${gasto.categoria} - ${gasto.fecha}`;
-        
-        item.appendChild(botonEliminar);
-        item.appendChild(botonEditar);
-        
-        listasGastos.appendChild(item);
+function cargarGastoEnFormulario(id) {
+  const gasto = obtenerGastoPorId(id);
 
-        total += gasto.cantidad;
-    });
+  if (!gasto) {
+    return;
+  }
+
+  idGastoEditando = id;
+  botonFormulario.textContent = "Guardar cambios";
+  botonCancelarEdicion.hidden = false;
+
+  document.querySelector("#descripcion").value = gasto.descripcion;
+  document.querySelector("#cantidad").value = gasto.cantidad;
+  document.querySelector("#categoria").value = gasto.categoria;
+  document.querySelector("#fecha").value = gasto.fecha;
+}
+
+function restablecerFormulario() {
+  idGastoEditando = null;
+
+  formulario.reset();
+
+  botonFormulario.textContent = "Agregar gasto";
+  botonCancelarEdicion.hidden = true;
+}
+
+
+function crearElementoGasto(gasto) {
+  const item = document.createElement("li");
+
+  item.textContent =
+    gasto.descripcion +
+    " - $" +
+    gasto.cantidad.toFixed(2) +
+    " - " +
+    gasto.categoria +
+    " - " +
+    gasto.fecha;
+
+  const botonEditar = document.createElement("button");
+
+  botonEditar.textContent = "Editar";
+
+  botonEditar.addEventListener("click", function () {
+    cargarGastoEnFormulario(gasto.id);
+  });
+
+  item.appendChild(botonEditar);
+
+  const botonEliminar = document.createElement("button");
+
+  botonEliminar.textContent = "Eliminar";
+
+ botonEliminar.addEventListener("click", function () {
+    procesarEliminacion(gasto.id);
+});
+
+  item.appendChild(botonEliminar);
+
+  return item;
+}
+
+function guardarGasto(datosFormulario) {
+  if (idGastoEditando === null) {
+    const gasto = construirGasto(datosFormulario);
+
+    agregarGasto(gasto);
+  } else {
+    actualizarGasto(idGastoEditando, datosFormulario);
+  }
+}
+
+function actualizarTotal() {
+    const total = calcularTotalGastos();
 
     totalGastos.textContent = "$" + total.toFixed(2);
 }
 
- const agregarGasto = gasto => {
-     gastos.push(gasto);
- };
+function procesarEliminacion(id) {
+    const eliminado = eliminarGasto(id);
 
-// function eliminarGasto(id){
-//     const indice = gastos.findIndex(function (gasto){
-//         return gasto.id === id;
-//     })
-    
-//     if(indice !== -1){
-//         gastos.splice(indice, 1);
-//     }
-
-//     renderizarGastos();
-// }
-
-const eliminarGasto = id => {
-    const indice = gasto.findIndex(gasto => gasto.id === id);
-
-    if(indice !== -1){
-        gastos.splice(indice, 1);
-    }
-
-    renderizarGastos(gasto);
-}
-
-const obtenerGastoPorId = id =>{
-    return gasto.find(gasto => gasto.id === id);
-}
-
-const cargarGastoEnFormulario = id =>{
-    const gasto = obtenerGastoPorId(id);
-
-    if (!gasto){
+    if (!eliminado) {
         return;
     }
-    document.querySelector("#descripcion").value = gasto.description;
-    document.querySelector("#cantidad").value = gasto.cantidad;
-    document.querySelector("#categoria").value = gasto.categoria;
-    document.querySelector("#Fecha").value = gasto.fecha;
-    
-    
 
+    if (idGastoEditando === id) {
+        restablecerFormulario();
+    }
+
+    renderizarGastos();
+}
+
+function renderizarGastos() {
+  listaGastos.innerHTML = "";
+
+  const gastos = obtenerGastos();
+  gastos.forEach(function (gasto) {
+    const item = crearElementoGasto(gasto);
+
+    listaGastos.appendChild(item);
+  });
+
+ actualizarTotal();
+}
+//le pregunta al navegador si soporta el SERVICEWORKER
+// if("serviceWorker" in navigator){
+//   navigator.serviceWorker.register("./sw.js")
+//   .then(function(registro){
+//     console.log("Service Worker registrado", registro.scope);
+//   })
+//   .catch(function(error){
+//     console.error("Error al registrar el Service Worker: ", error)
+//   })
+// }
+const registrarServiceWorker = async()=>{
+  if("ServiceWorker" in navigator) return;
+  try{
+    const registro = await navigator.serviceWorker.register("./sw.js");
+    console.log("Service Worker Registrado", registro.scope);
+  }catch(error){
+    console.log("No se pudo Añadir el service Worker", error)
+  }
 }
