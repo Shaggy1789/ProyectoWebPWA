@@ -164,7 +164,7 @@ function renderizarGastos() {
 //   })
 // }
 const registrarServiceWorker = async()=>{
-  if("ServiceWorker" in navigator) return;
+  if(!("serviceWorker" in navigator)) return;
   try{
     const registro = await navigator.serviceWorker.register("./sw.js");
     console.log("Service Worker Registrado", registro.scope);
@@ -172,3 +172,4 @@ const registrarServiceWorker = async()=>{
     console.log("No se pudo Añadir el service Worker", error)
   }
 }
+registrarServiceWorker();

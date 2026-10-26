@@ -7,12 +7,12 @@ self.addEventListener("install", function(evento){
 */
 console.log("evento install del Service Worker");
 //indica que el evento install debe esperar a que termine la Promise
-evento.waitUntill(
+evento.waitUntil(
     caches.open("Control-gastos-v1")
     .then(function(cache){
         return cache.addAll([
             "./",
-            "./index",
+            "./index.html",
             "./css/estilos.css",
             "./js/app.js",
             "./js/gastos.js",
@@ -24,12 +24,3 @@ evento.waitUntill(
 )
 })
 
-self.addEventListener("activate", (evento) =>{
-
-
-
-console.log(" fetch:", evento.request.url);
-evento.respondWith(
-    caches.match(evento.request)
-)
-})
